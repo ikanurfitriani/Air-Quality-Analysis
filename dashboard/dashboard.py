@@ -4,9 +4,15 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-script_dir = os.path.dirname(__file__)
-file_path = os.path.join(script_dir, './../dashboard/main_data.csv')
-data = pd.read_csv(file_path)
+script_dir = os.path.abspath(os.path.dirname(__file__))
+file_path = os.path.join(script_dir, "main_data.csv")
+
+if os.path.exists(file_path):
+    data = pd.read_csv(file_path)
+    print("File berhasil dibaca!")
+else:
+    print("Error: File tidak ditemukan, pastikan path benar atau gunakan alternatif seperti st.file_uploader().")
+
 data["datetime"] = pd.to_datetime(data["datetime"])
 
 if 'season' not in data.columns or 'time_of_day' not in data.columns:
