@@ -60,6 +60,7 @@ ax1.set_title('Tren Perubahan PM2.5 dan PM10 (2013-2017)', fontsize=16, fontweig
 ax1.set_xlabel('Periode Waktu')
 ax1.set_ylabel('Konsentrasi Rata-rata (µg/m³)')
 st.pyplot(fig1)
+plt.close(fig1)
 
 # Pertanyaan 2: PM2.5 dan PM10 di Pagi dan Sore
 st.subheader("Rata-rata PM2.5 dan PM10 di Pagi dan Sore Berdasarkan Musim")
@@ -75,6 +76,7 @@ ax2[0].set_title('Rata-rata PM2.5 di Pagi dan Sore')
 sns.barplot(data=seasonal_trends, x='season', y='PM10', hue='time_of_day', ax=ax2[1], palette="coolwarm")
 ax2[1].set_title('Rata-rata PM10 di Pagi dan Sore')
 st.pyplot(fig2)
+plt.close(fig2)
 
 # Pertanyaan 3: Tren Polutan Gas
 st.subheader("Tren Polutan Gas (SO2, NO2, CO, O3) (2013-2017)")
@@ -91,15 +93,17 @@ sns.lineplot(data=trend_gases, x='year_month', y='CO', label='CO', color='red')
 sns.lineplot(data=trend_gases, x='year_month', y='O3', label='O3', color='purple')
 ax3.set_title('Tren Polutan Gas (SO2, NO2, CO, O3)', fontsize=16, fontweight='bold')
 st.pyplot(fig3)
+plt.close(fig3)
 
 # Pertanyaan 4: Tekanan Udara vs PM2.5 dan PM10
-st.subheader("Hubungan Tekanan Udara (PRES) dengan PM2.5 dan PM10")
-fig4, ax4 = plt.subplots(figsize=(14, 8))
-sns.regplot(data=filtered_data, x='PRES', y='PM2.5', scatter_kws={'alpha': 0.5}, label='PM2.5', color='blue', ax=ax4)
-sns.regplot(data=filtered_data, x='PRES', y='PM10', scatter_kws={'alpha': 0.5}, label='PM10', color='orange', ax=ax4)
-ax4.set_title('Tekanan Udara vs PM2.5 & PM10')
-ax4.legend()
-st.pyplot(fig4)
+# st.subheader("Hubungan Tekanan Udara (PRES) dengan PM2.5 dan PM10")
+# fig4, ax4 = plt.subplots(figsize=(14, 8))
+# sns.regplot(data=filtered_data, x='PRES', y='PM2.5', scatter_kws={'alpha': 0.5}, label='PM2.5', color='blue', ax=ax4)
+# sns.regplot(data=filtered_data, x='PRES', y='PM10', scatter_kws={'alpha': 0.5}, label='PM10', color='orange', ax=ax4)
+# ax4.set_title('Tekanan Udara vs PM2.5 & PM10')
+# ax4.legend()
+# st.pyplot(fig4)
+# plt.close(fig4)
 
 # Pertanyaan 5: Kecepatan Angin vs Polutan
 st.subheader("Distribusi Polutan Berdasarkan Kecepatan Angin")
@@ -113,6 +117,7 @@ if 'wind_speed_category' in filtered_data.columns:
                 hue='wind_speed_category', palette=wind_speed_palette, dodge=False, legend=False)
     ax5[1].set_title('Distribusi PM10 Berdasarkan Kecepatan Angin')
     st.pyplot(fig5)
+    plt.close(fig5)
 else:
     st.error("Kolom 'wind_speed_category' tidak ditemukan di dataset.")
 
@@ -131,6 +136,7 @@ if not rain_heavy.empty:
     ax6.set_title('Rata-rata Konsentrasi PM2.5 dan PM10 pada Hujan Deras (>20 mm)', fontsize=14, fontweight='bold')
     ax6.set_ylabel('Konsentrasi (µg/m³)')
     st.pyplot(fig6)
+    plt.close(fig6)
 else:
     st.write("Tidak ada data hujan deras (>20 mm) pada rentang waktu yang dipilih.")
 
@@ -157,5 +163,8 @@ if not night_time.empty:
 
     plt.tight_layout()
     st.pyplot(fig7)
+    plt.close(fig7)
 else:
     st.write("Tidak ada data suhu malam hari pada rentang waktu yang dipilih.")
+
+plt.close('all')
