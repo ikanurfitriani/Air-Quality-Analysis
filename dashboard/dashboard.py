@@ -102,14 +102,14 @@ st.pyplot(fig3)
 plt.close(fig3)
 
 # Pertanyaan 4: Tekanan Udara vs PM2.5 dan PM10
-# st.subheader("Hubungan Tekanan Udara (PRES) dengan PM2.5 dan PM10")
-# fig4, ax4 = plt.subplots(figsize=(14, 8))
-# sns.regplot(data=filtered_data, x='PRES', y='PM2.5', scatter_kws={'alpha': 0.5}, label='PM2.5', color='blue', ax=ax4)
-# sns.regplot(data=filtered_data, x='PRES', y='PM10', scatter_kws={'alpha': 0.5}, label='PM10', color='orange', ax=ax4)
-# ax4.set_title('Tekanan Udara vs PM2.5 & PM10')
-# ax4.legend()
-# st.pyplot(fig4)
-# plt.close(fig4)
+st.subheader("Hubungan Tekanan Udara (PRES) dengan PM2.5 dan PM10")
+fig4, ax4 = plt.subplots(figsize=(14, 8))
+sns.regplot(data=filtered_data, x='PRES', y='PM2.5', scatter_kws={'alpha': 0.5}, label='PM2.5', color='blue', ax=ax4)
+sns.regplot(data=filtered_data, x='PRES', y='PM10', scatter_kws={'alpha': 0.5}, label='PM10', color='orange', ax=ax4)
+ax4.set_title('Tekanan Udara vs PM2.5 & PM10')
+ax4.legend()
+st.pyplot(fig4)
+plt.close(fig4)
 
 # Pertanyaan 5: Kecepatan Angin vs Polutan
 st.subheader("Distribusi Polutan Berdasarkan Kecepatan Angin")
