@@ -9,15 +9,23 @@ file_path = os.path.join(script_dir, "main_data.csv")
 
 if os.path.exists(file_path):
     data = pd.read_csv(file_path)
-    print("File berhasil dibaca!")
+    if data.empty:
+        st.error("Dataset kosong! Pastikan file CSV memiliki data yang valid.")
+        st.stop()
+    else:
+        print("File berhasil dibaca!")
 else:
-    print("Error: File tidak ditemukan, pastikan path benar atau gunakan alternatif seperti st.file_uploader().")
+    st.error("Error: File tidak ditemukan, pastikan path benar atau gunakan alternatif seperti st.file_uploader().")
+    st.stop()
+
+required_columns = {"datetime", "PM2.5", "PM10", "season", "time_of_day"}
+missing_columns = required_columns - set(data.columns)
+
+if missing_columns:
+    st.error(f"Dataset tidak memiliki kolom-kolom berikut: {', '.join(missing_columns)}")
+    st.stop()
 
 data["datetime"] = pd.to_datetime(data["datetime"])
-
-if 'season' not in data.columns or 'time_of_day' not in data.columns:
-    st.error("Kolom 'season' dan/atau 'time_of_day' tidak ditemukan di dataset. Pastikan dataset sudah lengkap.")
-    st.stop()
 
 image_path = "https://raw.githubusercontent.com/ikanurfitriani/Air-Quality-Analysis/master/dashboard/air-quality.png"
 st.sidebar.image(image_path, use_column_width=True)
@@ -28,28 +36,102 @@ min_date = data["datetime"].min().date()
 max_date = data["datetime"].max().date()
 start_date = st.sidebar.date_input("Waktu Awal", value=min_date, min_value=min_date, max_value=max_date)
 end_date = st.sidebar.date_input("Waktu Akhir", value=max_date, min_value=min_date, max_value=max_date)
+
+if start_date > end_date:
+    st.error("Tanggal awal tidak boleh lebih besar dari tanggal akhir!")
+    st.stop()
+
 selected_season = st.sidebar.selectbox("Pilih Musim", options=["Semua", "Panas", "Gugur", "Semi", "Dingin"])
+
+filtered_data = data[(data["datetime"] >= pd.to_datetime(start_date)) & (data["datetime"] <= pd.to_datetime(end_date))]
+if selected_season != "Semua":
+    filtered_data = filtered_data[filtered_data['season'] == selected_season]
 
 st.sidebar.empty()
 
 st.sidebar.markdown(
     """
     <div style="
-        margin-top: 20px;  /* Add some space above the copyright */
+        margin-top: 20px;  
         text-align: center; 
-        font-size: small; 
-        color: grey;">
+        font-size: 18px; 
+        color: white;">
         Copyright © 2025 Ika Nurfitriani
     </div>
     """,
     unsafe_allow_html=True
 )
 
-filtered_data = data[(data["datetime"] >= pd.to_datetime(start_date)) & (data["datetime"] <= pd.to_datetime(end_date))]
-if selected_season != "Semua":
-    filtered_data = filtered_data[filtered_data['season'] == selected_season]
-
 st.title("Air Quality Dashboard")
+
+# Fungsi untuk Menentukan Kategori Kualitas Udara Berdasarkan PM2.5 dan PM10
+def categorize_air_quality_pm(row):
+    pm25_thresholds = [12, 35.4, 55.4, 150.4, 250.4]
+    pm10_thresholds = [54, 154, 254, 354, 424]
+    categories = ["Baik", "Sedang", 
+                  "Tidak Sehat bagi Kelompok Sensitif", 
+                  "Tidak Sehat", "Sangat Tidak Sehat", 
+                  "Berbahaya"]
+    pm25_category = next((categories[i] for i, t in enumerate(pm25_thresholds) if row["PM2.5"] <= t), "Berbahaya")
+    pm10_category = next((categories[i] for i, t in enumerate(pm10_thresholds) if row["PM10"] <= t), "Berbahaya")
+    return max(pm25_category, pm10_category, key=categories.index)
+
+filtered_category_summary = filtered_data.copy()
+filtered_category_summary['air_quality_category'] = filtered_category_summary.apply(categorize_air_quality_pm, axis=1)
+filtered_category_summary['date'] = filtered_category_summary['datetime'].dt.date
+dominant_category_per_day = filtered_category_summary.groupby('date')['air_quality_category'].agg(lambda x: x.mode()[0]).reset_index()
+category_counts = dominant_category_per_day['air_quality_category'].value_counts().reset_index(name='Jumlah Hari')
+category_counts.columns = ['air_quality_category', 'Jumlah Hari']
+
+st.subheader("Jumlah Hari Berdasarkan Kategori Kualitas Udara (PM2.5 dan PM10)")
+columns = st.columns(4)
+columns2 = st.columns(3)
+
+categories = [
+    "Baik", "Sedang",
+    "Tidak Sehat bagi Kelompok Sensitif",
+    "Tidak Sehat", "Sangat Tidak Sehat", 
+    "Berbahaya"
+]
+
+for idx, category in enumerate(categories):
+    category_data = category_counts[category_counts['air_quality_category'] == category]
+    category_count = category_data['Jumlah Hari'].values[0] if not category_data.empty else 0
+    if idx < 4:
+        with columns[idx]:
+            st.markdown(f"<p style='font-size: 18px; color: white;'>{category}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 25px; font-weight: bold;'>{category_count} hari</p>", unsafe_allow_html=True)
+    else:
+        with columns2[idx - 4]:
+            st.markdown(f"<p style='font-size: 18px; color: white;'>{category}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size: 25px; font-weight: bold;'>{category_count} hari</p>", unsafe_allow_html=True)
+
+st.subheader("Jumlah Hari Berdasarkan Kategori Kualitas Udara (Dalam Diagram Batang)")
+fig8, ax = plt.subplots(figsize=(10, 6))
+sns.barplot(data=category_counts, x='air_quality_category', y='Jumlah Hari', 
+            hue='air_quality_category', palette='coolwarm', ax=ax)
+ax.set_title('Jumlah Hari Berdasarkan Kategori Kualitas Udara (PM2.5 dan PM10)', fontsize=14, fontweight='bold')
+ax.set_xlabel('')
+ax.set_ylabel('')
+ax.set_xticklabels([])
+plt.xticks(rotation=45, ha='right')
+handles, labels = ax.get_legend_handles_labels()
+if not handles:
+    ax.legend(handles=[plt.Line2D([0], [0], color=color, lw=4) for color in sns.color_palette('coolwarm', 6)], 
+              labels=categories, title='Kategori Kualitas Udara', loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
+st.pyplot(fig8)
+plt.close(fig8)
+
+st.subheader("Persentase Jumlah Hari Berdasarkan Kategori Kualitas Udara (PM2.5 dan PM10)")
+category_counts = category_counts.set_index('air_quality_category')['Jumlah Hari']
+fig9, ax = plt.subplots(figsize=(8, 8))
+ax.pie(category_counts, autopct='%1.1f%%', startangle=90, 
+       colors=sns.color_palette('coolwarm', len(category_counts)), labels=None)
+ax.set_title('Persentase Jumlah Hari Berdasarkan Kategori Kualitas Udara (PM2.5 dan PM10)', fontsize=14, fontweight='bold')
+plt.legend(category_counts.index, title='Kategori Kualitas Udara', loc='lower center', 
+           bbox_to_anchor=(0.5, -0.1), ncol=3)
+st.pyplot(fig9)
+plt.close(fig9)
 
 # Pertanyaan 1: Tren PM2.5 dan PM10 (2013-2017)
 st.subheader("Tren Perubahan PM2.5 dan PM10 (2013-2017)")
