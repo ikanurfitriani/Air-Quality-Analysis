@@ -62,7 +62,7 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-st.title("Air Quality Dashboard")
+st.title("Dashboard Kualitas Udara Beijing (12 Stasiun, 2013-2017)")
 
 # Fungsi untuk Menentukan Kategori Kualitas Udara Berdasarkan PM2.5 dan PM10
 def categorize_air_quality_pm(row):
