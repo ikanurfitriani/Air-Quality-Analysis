@@ -35,12 +35,30 @@ Air-Quality-Analysis/
 ```
 
 ## Project Setup / Installation Instructions
- ```
-git clone https://github.com/ikanurfitriani/Air-Quality-Analysis.git
-cd Air-Quality-Analysis
-pip install -r requirements.txt
-streamlit run dashboard/dashboard.py
-```
+1. Clone the repository from GitHub:  
+   ```
+   git clone https://github.com/ikanurfitriani/Air-Quality-Analysis.git
+   ```
+
+2. Navigate to the project directory:  
+   ```
+   cd Air-Quality-Analysis
+   ```
+
+3. Install the required dependencies:  
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. Navigate to the dashboard directory:  
+   ```
+   cd dashboard
+   ```
+
+5. Run the Streamlit application:  
+   ```
+   streamlit run dashboard.py
+   ```
 
 ## Author
 [@Ika Nurfitriani](https://github.com/ikanurfitriani)
