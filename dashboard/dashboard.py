@@ -28,7 +28,7 @@ if missing_columns:
 data["datetime"] = pd.to_datetime(data["datetime"])
 
 image_path = "https://raw.githubusercontent.com/ikanurfitriani/Air-Quality-Analysis/master/dashboard/air-quality.png"
-st.sidebar.image(image_path, use_column_width=True)
+st.sidebar.image(image_path, use_container_width=True)
 st.sidebar.markdown("<hr>", unsafe_allow_html=True)
 
 st.sidebar.header("Opsi Filter")
