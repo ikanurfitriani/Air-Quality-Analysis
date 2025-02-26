@@ -9,6 +9,9 @@ https://air-quality-analysis-by-ika.streamlit.app/
 ```bash
 Air-Quality-Analysis/
 │
+├── SS/                 
+│   └── SS.png
+│
 ├── dashboard/                 
 │   ├── air-quality.png
 │   ├── dashboard.py
@@ -28,6 +31,7 @@ Air-Quality-Analysis/
 │   ├── PRSA_Data_Wanliu_20130301-20170228.csv
 │   └── PRSA_Data_Wanshouxigong_20130301-20170228.csv
 │
+├── LICENSE.txt
 ├── README.md
 ├── notebook.ipynb
 ├── requirements.txt
