@@ -60,5 +60,10 @@ Air-Quality-Analysis/
    streamlit run dashboard.py
    ```
 
+## Screen Capture
+The following is a screen capture from the Air Quality Analysis - Version 1.0 dashboard:
+- `SS`
+<img src="SS/SS.png" alt="SS" width="800">
+
 ## Author
 [@Ika Nurfitriani](https://github.com/ikanurfitriani)
