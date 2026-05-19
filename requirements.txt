@@ -2,4 +2,4 @@ matplotlib==3.10.0
 numpy==2.2.3
 pandas==2.2.3
 seaborn==0.13.2
-streamlit==1.42.0
+streamlit==1.54.0
